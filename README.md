@@ -73,7 +73,11 @@ This separation keeps data clean, flexible, and easy to scale.
 
 ## 🛠️ Tech Stack
 
-> Final stack to be determined.
+Editor: Windsurf
+Platform: iOS (via Xcode toolchain)
+Framework: React Native
+Language: TypeScript
+Runtime: Node.js
 
 Planned goals for the tech stack:
 - Simple local-first storage
