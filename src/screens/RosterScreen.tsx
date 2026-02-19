@@ -1,4 +1,11 @@
-import React, { useState } from "react";
+import { useFocusEffect } from '@react-navigation/native';
+import { getAllPlayers } from "../storage/playerStorage";
+import { useCallback, useState } from "react";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/AppNavigator";
+
+type Props = NativeStackScreenProps<RootStackParamList, "Roster">;
+
 import {
   View,
   Text,
@@ -8,24 +15,15 @@ import {
 } from "react-native";
 import { Player } from "../models";
 
-export default function RosterScreen() {
-  // Temporary mock data (until we connect SQLite)
-  const [players, setPlayers] = useState<Player[]>([
-    {
-      id: "1",
-      name: "Alex Garcia",
-      jerseyNumber: 10,
-      position: "Midfielder",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      name: "Jordan Smith",
-      jerseyNumber: 7,
-      position: "Forward",
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+export default function RosterScreen({ navigation }: Props) {
+const [players, setPlayers] = useState<Player[]>([]);
+
+useFocusEffect(
+  useCallback(() => {
+    const loadedPlayers = getAllPlayers();
+    setPlayers(loadedPlayers);
+  }, [])
+);
 
   const renderPlayer = ({ item }: { item: Player }) => (
     <View style={styles.playerCard}>
@@ -45,9 +43,13 @@ export default function RosterScreen() {
         ListEmptyComponent={<Text>No players yet</Text>}
       />
 
-      <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>+ Add Player</Text>
-      </TouchableOpacity>
+<TouchableOpacity
+  style={styles.addButton}
+  onPress={() => navigation.navigate("AddPlayer")}
+>
+  <Text style={styles.addButtonText}>+ Add Player</Text>
+</TouchableOpacity>
+
     </View>
   );
 }
