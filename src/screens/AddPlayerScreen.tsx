@@ -1,3 +1,5 @@
+import { addPlayer } from "../storage/playerStorage";
+import * as Crypto from 'expo-crypto';
 import React, { useState } from "react";
 import {
   View,
@@ -17,8 +19,18 @@ export default function AddPlayerScreen({ navigation }: Props) {
   const [position, setPosition] = useState("");
 
   const handleSave = () => {
-    // For now we just go back.
-    // Next step we will wire this to real storage.
+    if (!name || !number || !position) {
+      return;
+    }
+    const id = Crypto.randomUUID();
+
+    addPlayer({
+      id,
+      name,
+      jerseyNumber: parseInt(number),
+      position: position as any,
+      createdAt: ""
+    });
     navigation.goBack();
   };
 
