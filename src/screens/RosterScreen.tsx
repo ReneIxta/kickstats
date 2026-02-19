@@ -1,3 +1,8 @@
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/AppNavigator";
+
+type Props = NativeStackScreenProps<RootStackParamList, "Roster">;
+
 import React, { useState } from "react";
 import {
   View,
@@ -8,7 +13,7 @@ import {
 } from "react-native";
 import { Player } from "../models";
 
-export default function RosterScreen() {
+export default function RosterScreen({ navigation }: Props) {
   // Temporary mock data (until we connect SQLite)
   const [players, setPlayers] = useState<Player[]>([
     {
@@ -45,9 +50,13 @@ export default function RosterScreen() {
         ListEmptyComponent={<Text>No players yet</Text>}
       />
 
-      <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>+ Add Player</Text>
-      </TouchableOpacity>
+<TouchableOpacity
+  style={styles.addButton}
+  onPress={() => navigation.navigate("AddPlayer")}
+>
+  <Text style={styles.addButtonText}>+ Add Player</Text>
+</TouchableOpacity>
+
     </View>
   );
 }
