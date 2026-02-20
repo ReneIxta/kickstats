@@ -1,3 +1,5 @@
+import { Picker } from '@react-native-picker/picker';
+import { POSITIONS } from '../constants/positions';
 import { addPlayer } from "../storage/playerStorage";
 import * as Crypto from 'expo-crypto';
 import React, { useState } from "react";
@@ -18,25 +20,47 @@ export default function AddPlayerScreen({ navigation }: Props) {
   const [number, setNumber] = useState("");
   const [position, setPosition] = useState("");
 
-  const handleSave = () => {
-    if (!name || !number || !position) {
-      return;
-    }
-    const id = Crypto.randomUUID();
+  const [error, setError] = useState("");
 
-    addPlayer({
-      id,
-      name,
-      jerseyNumber: parseInt(number),
-      position: position as any,
-      createdAt: ""
-    });
-    navigation.goBack();
-  };
+const handleSavePlayer = () => {
+  if (!name.trim()) {
+    setError("Player name is required");
+    return;
+  }
+
+  if (!number.trim()) {
+    setError("Jersey number is required");
+    return;
+  }
+
+  const parsedNumber = Number(number);
+  if (isNaN(parsedNumber) || parsedNumber <= 0) {
+    setError("Jersey number must be a valid number");
+    return;
+  }
+
+  if (!position) {
+    setError("Please select a position");
+    return;
+  }
+
+  setError("");
+
+  const id = Crypto.randomUUID();
+
+  addPlayer({
+    id,
+    name: name.trim(),
+    jerseyNumber: parsedNumber,
+    position,
+    createdAt: new Date().toISOString(),
+  });
+  navigation.goBack();
+};
 
   return (
     <View style={styles.container}>
-      <Text>Name</Text>
+      <Text style={styles.label}>Name</Text>
       <TextInput
         style={styles.input}
         placeholder="Player name"
@@ -44,7 +68,7 @@ export default function AddPlayerScreen({ navigation }: Props) {
         onChangeText={setName}
       />
 
-      <Text>Jersey Number</Text>
+      <Text style={styles.label}>Jersey Number</Text>
       <TextInput
         style={styles.input}
         placeholder="10"
@@ -53,15 +77,20 @@ export default function AddPlayerScreen({ navigation }: Props) {
         onChangeText={setNumber}
       />
 
-      <Text>Position</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Midfielder"
-        value={position}
-        onChangeText={setPosition}
-      />
+      <Text style={styles.label}>Position</Text>
+      <Picker
+        selectedValue={position}
+        onValueChange={(itemValue) => setPosition(itemValue)}
+      >
+      <Picker.Item label="Select Position..." value="" enabled={false} />
+        {POSITIONS.map((pos) => (
+          <Picker.Item key={pos} label={pos} value={pos} />
+        ))}
+      </Picker>
 
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      <TouchableOpacity style={styles.button} onPress={handleSavePlayer}>
         <Text style={styles.buttonText}>Save Player</Text>
       </TouchableOpacity>
     </View>
@@ -70,6 +99,12 @@ export default function AddPlayerScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+    color: "#333",
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -86,4 +121,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: { color: "white", fontWeight: "600", fontSize: 16 },
+  error: { color: "red", marginTop: 8, marginBottom: 8 },
 });
