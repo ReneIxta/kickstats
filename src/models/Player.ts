@@ -2,12 +2,6 @@ export interface Player {
   id: string;
   name: string;
   jerseyNumber: number;
-  position: PlayerPosition;
+  position: string;
   createdAt: string;
 }
-
-export type PlayerPosition =
-  | "Goalkeeper"
-  | "Defender"
-  | "Midfielder"
-  | "Forward";
